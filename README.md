@@ -1,11 +1,29 @@
-# Sable vendor integration
+# SableOS common product integration
 
-Common Android product integration for SableOS.
+Common SableOS Android product configuration, overlays, permissions integration, and validated default-package composition.
 
-This repository is for Sable-owned configuration that belongs in the Android product layer but is shared across devices where practical. It must not become a catch-all for device trees or proprietary vendor payloads.
+This repository is not a home for copied application source or device-specific forks.
 
-Typical responsibilities may include common product definitions, package inclusion, shared overlays, common SELinux/product integration, and other Sable product wiring.
+## Ownership boundary
 
-Device-specific board configuration, hardware compatibility work, and vendor/BSP assumptions belong in the corresponding `device_sable_<target>` repository or explicitly versioned external inputs.
+- application repositories own application source;
+- `platform_sable` owns common Sable semantic/design contracts;
+- `vendor_sable` owns common Sable product inclusion/configuration;
+- `device_sable_*` owns bounded target-specific integration;
+- `platform_manifest` pins exact source composition.
 
-See `docs/OWNERSHIP_BOUNDARY.md`.
+See [`docs/OWNERSHIP_BOUNDARY.md`](docs/OWNERSHIP_BOUNDARY.md).
+
+## Default applications
+
+The daily-driver plan intentionally does not require every user-facing application to be Sable-owned.
+
+Normative product-selection policy:
+
+- [`docs/DEFAULT_APPLICATION_COMPOSITION.md`](docs/DEFAULT_APPLICATION_COMPOSITION.md)
+
+R7 must explicitly record the actual Phone, Messaging, Contacts, Browser, Camera, Files, Clock, and Calculator implementations instead of assuming a blanket "AOSP" or "Graphene" app policy.
+
+Complex interoperability apps should initially use a proven implementation. Sable Calculator is the first planned native utility replacement after the shared R8 design/theme foundation.
+
+Maps/Weather used during development are test fixtures unless a separate product decision makes them defaults.
