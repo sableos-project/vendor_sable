@@ -14,6 +14,27 @@ This repository is not a home for copied application source or device-specific f
 
 See [`docs/OWNERSHIP_BOUNDARY.md`](docs/OWNERSHIP_BOUNDARY.md).
 
+## R6 operational composition
+
+The first operational common product fragment is [`config/common.mk`](config/common.mk).
+
+For R6 it intentionally selects only the common Sable launcher module:
+
+```make
+PRODUCT_PACKAGES += \
+    SableStart
+```
+
+A target-specific Sable product adapter inherits this fragment after its upstream/substrate product. The common fragment must not encode Panther-specific build IDs, device properties, generated-vendor paths, or hardware policy.
+
+Canonical Android checkout path for this repository is intended to be:
+
+```text
+vendor/sable
+```
+
+R6 product integration does not pull the broader R7 default-application decisions forward.
+
 ## Default applications
 
 The daily-driver plan intentionally does not require every user-facing application to be Sable-owned.
