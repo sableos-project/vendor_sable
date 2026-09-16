@@ -2,104 +2,118 @@
 
 Status: **normative product-integration/default-application policy.**
 
-`vendor_sable` owns common product inclusion/configuration for validated applications. It does not own application implementation source or the standalone Cargo/Gradle dependency graph.
+`vendor_sable` owns common product inclusion/configuration for validated applications. It does not own application implementation source or standalone Cargo/Gradle dependency graphs.
 
-## 1. Separate the states
-
-Use explicit states:
+## 1. Explicit application states
 
 ```text
 SOURCE_CANDIDATE
-STANDALONE_QUALIFIED
-ARTIFACT_FROZEN
-PRODUCT_INTEGRATED
+A1_STANDALONE_QUALIFIED
+A2_TRUSTED_ARTIFACT_FROZEN
+B1_PRODUCT_INTEGRATED
+PRODUCT_OUT_PRESENT
+TARGET_FILES_PRESENT
 IMAGE_PRESENT
 RUNTIME_VALIDATED
 DEFAULT_OR_ROLE_HOLDER
 REPLACEMENT_ACCEPTED
 ```
 
-Do not collapse these into one "included" flag.
+Do not collapse these into one `included` flag.
 
 ## 2. R7 baseline
 
-R7 daily-driver qualification records the actual working Phone, Messaging, Contacts, Browser, Camera, Files, Clock, Calculator and other baseline implementations.
-
-An inherited/proven app is acceptable where the Sable replacement is not yet qualified. Do not force a replacement merely to make the product look more Sable-branded.
+R7 daily-driver qualification records the actual working Phone, Messaging, Contacts, Browser, Camera, Files, Clock, Calculator and other baseline implementations. Inherited/proven apps remain valid fallbacks until replacements pass the applicable gates.
 
 ## 3. R8 application train
 
-R8 independently qualifies:
+R8 independently qualifies Calculator + Convert, Games, Reader publication capability, Reader TXT/share/process-text/TTS/OCR capability and Media.
 
-- Calculator + Convert;
-- Games;
-- Reader publication capability;
-- Reader TXT/share/process-text/TTS/OCR capability;
-- Media.
+The old R9-first-Calculator sequencing is superseded. A standalone-qualified Sable app still does not become a product default automatically.
 
-A successful standalone qualification does not select the app into the OS. `vendor_sable` becomes relevant only at the integration freeze/product-composition stage.
+## 4. A1 versus A2 input contract
 
-The old R9-first-Calculator sequencing is superseded. Sable Calculator is an R8-B candidate, while the inherited calculator remains a valid fallback until the Sable app completes product/runtime acceptance.
+A1 GitHub qualification proves source/application behavior. A2 on `ai-g732` produces the trusted artifact eligible for product integration.
 
-## 4. Input contract for a qualified app
-
-Before common product inclusion, record:
+Before common product inclusion bind:
 
 ```text
 source repository + exact commit
 upstream/reuse source + exact commit where applicable
-qualification workflow/run
+trusted A2 build/toolchain identity
 application/package ID
 versionCode/versionName
-APK SHA-256
+trusted APK SHA-256
 permissions/AppOps implications
 exported components/intent filters
-native ABI/library inventory
+classes*.dex identity
+JNI .so identity
+native ABI / 16 KiB compatibility
 dependency/license/provenance inventory
 accepted feature-policy boundary
 known limitations
 ```
 
-Do not store an APK here when its provenance/rebuildability cannot be stated.
+Do not store/integrate an APK whose provenance/rebuildability cannot be stated.
 
-## 5. Android import/module proof
+## 5. Common module/product composition
 
-The exact Android 17 / GrapheneOS mechanism for consuming a sealed APK must be proven before being normalized.
-
-`android_app_import` is currently a candidate. Whatever mechanism is selected must establish:
+Common imported modules and common app selection belong in `vendor_sable`, conceptually:
 
 ```text
-sealed APK/input hash
- -> declared Sable module/import
- -> selected PRODUCT_PACKAGES/product composition
- -> expected partition/install path
- -> concrete PRODUCT_OUT artifact
- -> installed-files evidence
- -> target-files/image membership
+vendor/sable/apps/Android.bp
+vendor/sable/config/common.mk
 ```
 
-If the build intentionally transforms/re-signs the APK, record both input and resulting output identities instead of falsely requiring byte equality.
+Panther and Titan 2 products should inherit the same common composition where compatible. Device repositories add only target-specific exceptions and must not duplicate the common app list merely because the hardware differs.
 
-## 6. Product/default role is a separate gate
+## 6. Android import/module proof
 
-Installing an app in the image does not make it the default HOME/Dialer/SMS/Browser or other role holder.
+`android_app_import` is the preferred candidate until exact Android 17 / GrapheneOS behavior is observed.
 
-For role/default transitions prove:
+For each A2 artifact prove separately:
 
-- previous and new package/component;
-- role/default state;
-- privileged grants/allowlists/overlays;
-- exported/intent handling;
-- migration/interoperability;
-- reboot persistence when required/authorized;
-- rollback/fallback;
-- cleanup of stale previous-product references.
+```text
+trusted APK/input hash
+ -> module/import declaration
+ -> certificate/signing behavior
+ -> JNI/dexpreopt/uses-library processing
+ -> selected PRODUCT_PACKAGES/common composition
+ -> expected partition/install path
+ -> concrete PRODUCT_OUT artifact
+```
 
-## 7. Sable Reader composition
+Later target-files/image/runtime evidence remains separate.
 
-The intended product is **one Sable Reader identity**.
+If Soong intentionally transforms or resigns the APK, record whole-file output identity plus stable DEX/JNI inner-content identities instead of falsely requiring byte equality.
 
-Capability provenance may come from:
+## 7. Application identity / shared UID
+
+R8 adopts:
+
+```text
+NO_NEW_SHARED_USER_ID=YES
+```
+
+Do not add `android:sharedUserId` to new Sable applications. Current Sable-owned apps do not require it, including Sable Start. Any future exception requires explicit security/architecture review and migration/update analysis rather than being introduced for convenience.
+
+## 8. SELinux/product-label boundary
+
+Ordinary inclusion under `/system/app` does not by itself require a custom Sable `file_contexts` rule or custom process domain.
+
+For each app, first prove whether normal Android app-domain behavior is sufficient. Add signer/seinfo mappings, `seapp_contexts`, custom domains, `file_contexts`, property contexts or privileged-policy rules only when a documented capability actually requires them.
+
+Do not promote an app into `system_app`, a custom SELinux domain, or privileged status merely because it ships on the system partition.
+
+## 9. Default/role transition is a separate gate
+
+Installing an app in the image does not make it HOME/Dialer/SMS/Browser or another role holder.
+
+For role/default transitions prove previous/new package/component, role state, privileged grants/allowlists/overlays, intent handling, migration/interoperability, reboot persistence where required/authorized, rollback/fallback and cleanup of stale prior references.
+
+## 10. Sable Reader composition
+
+The intended product is **one Sable Reader identity** composed from separately qualified capability sources where useful:
 
 ```text
 Vaachak Mobile / Readium
@@ -109,62 +123,44 @@ Vaachak Text Reader
     TXT/share/process-text/TTS/OCR path
 ```
 
-Do not select two competing Sable Reader launcher applications merely because both upstream APKs are independently qualified during development.
+Do not ship two competing Sable Reader launcher apps merely because both upstreams are qualified independently.
 
-The final Sable Reader artifact/source composition must have an explicit package identity and feature/network policy before inclusion.
+Network/model-download behavior remains an explicit product/privacy gate. Translation may be deferred while TXT/TTS/OCR is accepted.
 
-## 8. Reader network/privacy boundary
+## 11. Sable Media
 
-Network-backed Vaachak features are not accepted automatically.
+Media's Internet permission is justified only by network/radio functionality. Local Music should use supported Android user-granted media/document APIs rather than broad storage authority.
 
-Vaachak Text Reader currently exposes Internet/model-acquisition behavior for translation. The product policy must distinguish on-device processing from model download/network requirements. Translation may be deferred while TXT/TTS/OCR is accepted.
+## 12. Permission/privilege rule
 
-## 9. Sable Media
+Do not add privileged/system status, allowlists, SELinux exceptions, roles or permissions simply to make an app work more easily. Every added authority must map to an accepted requirement and have validation/rollback evidence.
 
-Sable Media's Internet permission is justified only by network/radio functionality. Local Music should rely on supported Android user-granted media/document APIs rather than broad storage privilege.
+## 13. Dual-target rule
 
-When one APK combines local and network media, tests must prove the network permission does not create unrelated data collection/authority.
+Where compatible, Panther and Titan 2 consume the same trusted common R8 app artifacts and common product composition.
 
-## 10. Permission and privilege rules
+A Titan-specific keyboard/layout/device adapter is acceptable. A duplicate common app source fork is not.
 
-Do not add system/privileged status, allowlist entries, SELinux exceptions, roles or permissions simply to make an application work more easily.
+## 14. Product-composition evidence
 
-Every authority maps to an accepted requirement and has a validation/rollback story.
-
-## 11. Product-composition evidence
-
-For every R8 integrated app retain:
+For every integrated R8 app retain:
 
 ```text
-freeze identity
+A2 freeze identity
 module/import source
 product selection evidence
 PRODUCT_OUT path/hash
-installed-files evidence
-target-files/image evidence
+target-files/image evidence when generated
 runtime package/component evidence
 role/default evidence if applicable
 ```
 
-A successful full Android build can coexist with `SABLE_APP_PRODUCT_CLOSURE=FAIL`; report those claims separately.
+A successful Android build can coexist with `SABLE_APP_PRODUCT_CLOSURE=FAIL`; report claims separately.
 
-## 12. Fixtures / optional apps
+## 15. Signing boundary
 
-Maps, Weather and other development/user-installed fixtures do not become product dependencies by appearing in launcher tests.
+Development/test signing may be used for engineering images. Production APK/AVB/OTA signing is deferred until Panther and Titan 2 development qualification is satisfactory.
 
-Record whether an app is:
+## 16. Rollback
 
-```text
-required product app
-qualified candidate
-optional/recommended
-inherited fallback
-development fixture
-user-installed
-```
-
-## 13. Rollback
-
-Do not remove the prior proven implementation/references until the replacement has passed the appropriate image/runtime/default-role gate and the rollback path is understood.
-
-Historical release/product composition remains immutable evidence after later replacement.
+Do not remove a prior proven implementation/reference until the replacement has passed the appropriate image/runtime/default-role gate and rollback is understood. Historical product composition remains immutable evidence.
