@@ -87,13 +87,31 @@ Later target-files/image/runtime evidence remains separate.
 
 If Soong intentionally transforms or resigns the APK, record whole-file output identity plus stable DEX/JNI inner-content identities instead of falsely requiring byte equality.
 
-## 7. Default/role transition is a separate gate
+## 7. Application identity / shared UID
+
+R8 adopts:
+
+```text
+NO_NEW_SHARED_USER_ID=YES
+```
+
+Do not add `android:sharedUserId` to new Sable applications. Current Sable-owned apps do not require it, including Sable Start. Any future exception requires explicit security/architecture review and migration/update analysis rather than being introduced for convenience.
+
+## 8. SELinux/product-label boundary
+
+Ordinary inclusion under `/system/app` does not by itself require a custom Sable `file_contexts` rule or custom process domain.
+
+For each app, first prove whether normal Android app-domain behavior is sufficient. Add signer/seinfo mappings, `seapp_contexts`, custom domains, `file_contexts`, property contexts or privileged-policy rules only when a documented capability actually requires them.
+
+Do not promote an app into `system_app`, a custom SELinux domain, or privileged status merely because it ships on the system partition.
+
+## 9. Default/role transition is a separate gate
 
 Installing an app in the image does not make it HOME/Dialer/SMS/Browser or another role holder.
 
 For role/default transitions prove previous/new package/component, role state, privileged grants/allowlists/overlays, intent handling, migration/interoperability, reboot persistence where required/authorized, rollback/fallback and cleanup of stale prior references.
 
-## 8. Sable Reader composition
+## 10. Sable Reader composition
 
 The intended product is **one Sable Reader identity** composed from separately qualified capability sources where useful:
 
@@ -109,21 +127,21 @@ Do not ship two competing Sable Reader launcher apps merely because both upstrea
 
 Network/model-download behavior remains an explicit product/privacy gate. Translation may be deferred while TXT/TTS/OCR is accepted.
 
-## 9. Sable Media
+## 11. Sable Media
 
 Media's Internet permission is justified only by network/radio functionality. Local Music should use supported Android user-granted media/document APIs rather than broad storage authority.
 
-## 10. Permission/privilege rule
+## 12. Permission/privilege rule
 
 Do not add privileged/system status, allowlists, SELinux exceptions, roles or permissions simply to make an app work more easily. Every added authority must map to an accepted requirement and have validation/rollback evidence.
 
-## 11. Dual-target rule
+## 13. Dual-target rule
 
 Where compatible, Panther and Titan 2 consume the same trusted common R8 app artifacts and common product composition.
 
 A Titan-specific keyboard/layout/device adapter is acceptable. A duplicate common app source fork is not.
 
-## 12. Product-composition evidence
+## 14. Product-composition evidence
 
 For every integrated R8 app retain:
 
@@ -139,10 +157,10 @@ role/default evidence if applicable
 
 A successful Android build can coexist with `SABLE_APP_PRODUCT_CLOSURE=FAIL`; report claims separately.
 
-## 13. Signing boundary
+## 15. Signing boundary
 
 Development/test signing may be used for engineering images. Production APK/AVB/OTA signing is deferred until Panther and Titan 2 development qualification is satisfactory.
 
-## 14. Rollback
+## 16. Rollback
 
 Do not remove a prior proven implementation/reference until the replacement has passed the appropriate image/runtime/default-role gate and rollback is understood. Historical product composition remains immutable evidence.
