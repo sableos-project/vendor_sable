@@ -1,242 +1,170 @@
 # Default application composition policy
 
-Status: **normative product-integration policy; exact package selections remain subject to R7 inventory/validation.**
+Status: **normative product-integration/default-application policy.**
 
-`vendor_sable` owns common SableOS product integration. It may select/include validated application packages as product defaults, overlays, permissions, and common product configuration require. It does **not** own the application source itself.
+`vendor_sable` owns common product inclusion/configuration for validated applications. It does not own application implementation source or the standalone Cargo/Gradle dependency graph.
 
-This document prevents default-app decisions from becoming hidden product makefile choices with no recorded rationale.
+## 1. Separate the states
 
-## 1. Ownership boundary
-
-Use this separation:
+Use explicit states:
 
 ```text
-application repository
-  -> owns application source and app-specific requirements
-
-platform_sable
-  -> owns common Sable semantic/design/platform contracts
-
-vendor_sable
-  -> owns common Sable product composition/integration
-
-platform_manifest
-  -> pins exact source repositories/revisions
-
-device_sable_*
-  -> owns bounded device-specific integration only
+SOURCE_CANDIDATE
+STANDALONE_QUALIFIED
+ARTIFACT_FROZEN
+PRODUCT_INTEGRATED
+IMAGE_PRESENT
+RUNTIME_VALIDATED
+DEFAULT_OR_ROLE_HOLDER
+REPLACEMENT_ACCEPTED
 ```
 
-Do not copy Phone/Messaging/Calculator/etc. source trees into `vendor_sable`.
+Do not collapse these into one "included" flag.
 
-Do not duplicate a common default-app choice in every device repository unless the choice is genuinely device-specific and documented.
+## 2. R7 baseline
 
-## 2. Daily-driver first policy
+R7 daily-driver qualification records the actual working Phone, Messaging, Contacts, Browser, Camera, Files, Clock, Calculator and other baseline implementations.
 
-The initial SableOS product should prioritize a dependable working phone over replacing mature applications for branding.
+An inherited/proven app is acceptable where the Sable replacement is not yet qualified. Do not force a replacement merely to make the product look more Sable-branded.
 
-For the R7 daily-driver baseline, product composition must provide working implementations for:
+## 3. R8 application train
 
-- Phone/Dialer;
-- Messaging with SMS/MMS;
-- Contacts sufficient for phone/message workflows;
-- Browser;
-- Camera;
-- photo/gallery/media viewing as needed;
-- Files/documents UI;
-- Clock/alarm;
-- Calculator;
-- Settings/platform connectivity UI;
-- Sable Start.
+R8 independently qualifies:
 
-An inherited implementation is acceptable where the default-app policy has not yet approved a Sable replacement.
+- Calculator + Convert;
+- Games;
+- Reader publication capability;
+- Reader TXT/share/process-text/TTS/OCR capability;
+- Media.
 
-## 3. Component selection record
+A successful standalone qualification does not select the app into the OS. `vendor_sable` becomes relevant only at the integration freeze/product-composition stage.
 
-Before a package is treated as a SableOS shipping/default application, record:
+The old R9-first-Calculator sequencing is superseded. Sable Calculator is an R8-B candidate, while the inherited calculator remains a valid fallback until the Sable app completes product/runtime acceptance.
 
-- capability name;
-- package name;
-- important activity/service/provider components;
-- source/provenance;
-- exact upstream revision when source-built;
-- license/redistribution status;
-- branding/trademark implications;
-- whether it is privileged/system/role holder;
-- permissions/allowlists required by product configuration;
-- dependencies on Android/AOSP/Graphene-specific or external services;
-- update/security maintenance owner;
-- device compatibility requirements;
-- whether selection is `temporary`, `preferred`, `required`, or `replacement planned`;
-- runtime qualification evidence reference.
+## 4. Input contract for a qualified app
 
-The product should be able to answer "why is this package in the image?" from GitHub documentation.
+Before common product inclusion, record:
 
-## 4. Initial class policy
+```text
+source repository + exact commit
+upstream/reuse source + exact commit where applicable
+qualification workflow/run
+application/package ID
+versionCode/versionName
+APK SHA-256
+permissions/AppOps implications
+exported components/intent filters
+native ABI/library inventory
+dependency/license/provenance inventory
+accepted feature-policy boundary
+known limitations
+```
 
-### Platform/security-critical functions
+Do not store an APK here when its provenance/rebuildability cannot be stated.
 
-Examples: telephony framework, networking, permissions, Settings plumbing.
+## 5. Android import/module proof
 
-Direction: keep validated substrate/platform mechanisms. `vendor_sable` may integrate/configure them but must not replace them with app-level hacks.
+The exact Android 17 / GrapheneOS mechanism for consuming a sealed APK must be proven before being normalized.
 
-### Complex interoperability apps
+`android_app_import` is currently a candidate. Whatever mechanism is selected must establish:
 
-Examples: Phone, Messaging, Browser, Camera.
+```text
+sealed APK/input hash
+ -> declared Sable module/import
+ -> selected PRODUCT_PACKAGES/product composition
+ -> expected partition/install path
+ -> concrete PRODUCT_OUT artifact
+ -> installed-files evidence
+ -> target-files/image membership
+```
 
-Direction: select a proven implementation first. A Sable replacement is a later explicit decision.
+If the build intentionally transforms/re-signs the APK, record both input and resulting output identities instead of falsely requiring byte equality.
 
-### Simple utilities
+## 6. Product/default role is a separate gate
 
-Examples: Calculator, Notes.
+Installing an app in the image does not make it the default HOME/Dialer/SMS/Browser or other role holder.
 
-Direction: suitable for later Sable-owned replacement after requirements and shared design contracts exist. Calculator is first planned Sable utility.
+For role/default transitions prove:
 
-### Provider/content apps
+- previous and new package/component;
+- role/default state;
+- privileged grants/allowlists/overlays;
+- exported/intent handling;
+- migration/interoperability;
+- reboot persistence when required/authorized;
+- rollback/fallback;
+- cleanup of stale previous-product references.
 
-Examples: Weather, Maps.
+## 7. Sable Reader composition
 
-Direction: do not make a current test fixture a required product dependency by accident. Provider/default status requires a separate choice.
+The intended product is **one Sable Reader identity**.
 
-## 5. AOSP versus GrapheneOS-derived versus other implementations
+Capability provenance may come from:
 
-There is no blanket rule that every default must come from one upstream.
+```text
+Vaachak Mobile / Readium
+    publication/EPUB/library path
 
-Evaluate each application on:
+Vaachak Text Reader
+    TXT/share/process-text/TTS/OCR path
+```
 
-- source/license availability;
-- active security maintenance;
-- Android-version compatibility;
-- integration dependencies;
-- privileged permission requirements;
-- branding/trademark constraints;
-- portability to future Sable targets;
-- user experience and accessibility;
-- ability to update independently or with the OS;
-- data migration/interop.
+Do not select two competing Sable Reader launcher applications merely because both upstream APKs are independently qualified during development.
 
-Do not select an app solely because it happens to be present in the current reference workspace.
+The final Sable Reader artifact/source composition must have an explicit package identity and feature/network policy before inclusion.
 
-Do not reject a proven inherited app solely because it is not Sable-branded.
+## 8. Reader network/privacy boundary
 
-## 6. Role/default-handler configuration
+Network-backed Vaachak features are not accepted automatically.
 
-If SableOS sets a default role/handler through product configuration, document it explicitly.
+Vaachak Text Reader currently exposes Internet/model-acquisition behavior for translation. The product policy must distinguish on-device processing from model download/network requirements. Translation may be deferred while TXT/TTS/OCR is accepted.
 
-Examples include:
+## 9. Sable Media
 
-- HOME/launcher;
-- Phone/Dialer;
-- SMS;
-- Browser.
+Sable Media's Internet permission is justified only by network/radio functionality. Local Music should rely on supported Android user-granted media/document APIs rather than broad storage privilege.
 
-Default-role changes are product behavior, not an incidental build detail.
+When one APK combines local and network media, tests must prove the network permission does not create unrelated data collection/authority.
 
-During development/validation, a component may intentionally be installed without taking the role (for example Sable Start preview/runtime testing while Quickstep remains HOME). Do not conflate installed capability with selected default role.
+## 10. Permission and privilege rules
 
-## 7. Privileged permissions and allowlists
+Do not add system/privileged status, allowlist entries, SELinux exceptions, roles or permissions simply to make an application work more easily.
 
-Any privileged permission/allowlist associated with a default app must be justified by an actual supported application requirement.
+Every authority maps to an accepted requirement and has a validation/rollback story.
 
-Rules:
+## 11. Product-composition evidence
 
-- no broad allowlist "just in case";
-- keep allowlists close to the product/app decision and reviewable;
-- document whether the permission is inherited from the upstream app model or Sable-specific;
-- remove obsolete product grants when the owning package is removed/replaced, through a separately validated cleanup change;
-- do not grant privilege merely to avoid using supported Android APIs.
+For every R8 integrated app retain:
 
-## 8. Optional/test applications
+```text
+freeze identity
+module/import source
+product selection evidence
+PRODUCT_OUT path/hash
+installed-files evidence
+target-files/image evidence
+runtime package/component evidence
+role/default evidence if applicable
+```
 
-Development fixtures such as currently installed Maps/Weather may be useful for R6 launcher inventory tests but are not thereby required defaults.
+A successful full Android build can coexist with `SABLE_APP_PRODUCT_CLOSURE=FAIL`; report those claims separately.
 
-Product composition documentation should distinguish:
+## 12. Fixtures / optional apps
+
+Maps, Weather and other development/user-installed fixtures do not become product dependencies by appearing in launcher tests.
+
+Record whether an app is:
 
 ```text
 required product app
-optional recommended app
-development/test fixture
-user-installed app
+qualified candidate
+optional/recommended
+inherited fallback
+development fixture
+user-installed
 ```
 
-Do not bake a test fixture into the shipping image without a product decision.
+## 13. Rollback
 
-## 9. Sable Calculator transition
+Do not remove the prior proven implementation/references until the replacement has passed the appropriate image/runtime/default-role gate and the rollback path is understood.
 
-R7 may use an inherited calculator for daily-driver readiness.
-
-When R9 Sable Calculator is validated and integrated:
-
-1. add its repository/revision to the exact source composition;
-2. include its build module in the common product where intended;
-3. validate package/permission/signing/update behavior;
-4. remove/disable the previous default calculator only if product requirements call for replacement;
-5. prove no stale overlays/allowlists/package references remain;
-6. preserve rollback capability until the new app is qualified.
-
-Do not remove the working baseline calculator before Sable Calculator passes its own build/runtime gate.
-
-## 10. Theme/customization boundary
-
-R8 Sable application theme/customization state belongs in common Sable product/application contracts, not as vendor-specific literal UI values.
-
-`vendor_sable` may define platform/product resource overlays when that is the correct Android integration point, but it should not become the canonical source for Sable app design tokens.
-
-## 11. Device portability
-
-A common default application belongs in `vendor_sable` product composition when it is intended across Sable devices.
-
-Only move selection/integration to `device_sable_*` when the difference is genuinely target-specific, such as a hardware-specific camera implementation that cannot be common.
-
-Even then, common user-facing semantics should remain in shared documentation.
-
-## 12. Removal/replacement cleanup checklist
-
-Whenever replacing a default app, audit at least:
-
-- product package lists;
-- overlays;
-- permissions/privapp allowlists;
-- roles/default handlers;
-- intent filters/associations;
-- SELinux rules if any;
-- framework config references;
-- manifest/source composition;
-- update/signing expectations;
-- tests/evidence scripts;
-- old package data/migration behavior.
-
-Do not delete historical evidence merely because the app changed.
-
-## 13. R7 output expected from product composition
-
-R7 should leave behind a documented table similar to:
-
-| Capability | Package | Provenance | Product status | Replacement horizon |
-| --- | --- | --- | --- | --- |
-| Sable Start | `org.sableos.start` | Sable | required/common | active |
-| Phone | TBD after inventory | TBD | R7 required | inherited initially |
-| Messaging | TBD | TBD | R7 required | inherited initially |
-| Contacts | TBD | TBD | R7 required | evaluate |
-| Browser | TBD | TBD | R7 required | inherited initially |
-| Camera | TBD | TBD | R7 required | inherited initially |
-| Files | TBD | TBD | R7 required | later Sable candidate |
-| Clock | TBD | TBD | R7 required | later Sable candidate |
-| Calculator | TBD for R7 | TBD | R7 required | Sable replacement planned R9 |
-| Weather | no required default yet | provider/user choice | optional/test | future decision |
-| Maps | no required default yet | provider/user choice | optional/test | future decision |
-
-`TBD` is preferable to an undocumented assumption.
-
-## 14. Definition of policy compliance
-
-A product composition change complies with this policy when:
-
-- application source remains in the owning repository;
-- the product choice and rationale are documented;
-- exact source composition can pin the selected implementation;
-- privilege/role implications are explicit;
-- runtime qualification exists for baseline daily-driver apps;
-- a test/development fixture is not silently promoted to required default;
-- device-specific forks are avoided unless technically justified;
-- future maintainers can determine the selected implementation and replacement plan without relying on chat history.
+Historical release/product composition remains immutable evidence after later replacement.
