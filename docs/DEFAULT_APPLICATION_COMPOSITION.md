@@ -31,6 +31,33 @@ R8 independently qualifies Calculator + Convert, Games, Reader publication capab
 
 The old R9-first-Calculator sequencing is superseded. A standalone-qualified Sable app still does not become a product default automatically.
 
+## R8-F Sable Hub / Messages
+
+The R8 common application train now includes the Sable Hub central messaging baseline:
+
+```text
+package = org.sableos.hub
+user-visible surface = Sable Messages
+```
+
+The intended product role is one Sable communication surface while mature Android transport remains available underneath where needed.
+
+Product-integration rules:
+
+- Sable Hub is common product code/artifact, not Panther-specific;
+- Panther and Titan 2 should consume the same qualified Hub source/artifact where compatible;
+- underlying Messaging transport may remain installed for MMS/RCS capability and rollback even when it is no longer the primary Sable launcher surface;
+- do not grant the default SMS role merely because Hub is preinstalled;
+- any READ_SMS/SEND_SMS/default-handler/privileged authority must be separately justified, integrated and validated;
+- provider web capsules are explicit WEB capability and do not imply native provider integration;
+- the final R8 product-composition evidence must include exact Hub source/artifact identity, package, hash, install path and runtime behavior.
+
+Required final-R8 marker:
+
+```text
+R8_F_SABLE_HUB_MESSAGES=PASS
+```
+
 ## 4. A1 versus A2 input contract
 
 A1 GitHub qualification proves source/application behavior. A2 on `ai-g732` produces the trusted artifact eligible for product integration.
