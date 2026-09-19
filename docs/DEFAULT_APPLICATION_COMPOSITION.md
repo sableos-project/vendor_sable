@@ -27,7 +27,9 @@ R7 daily-driver qualification records the actual working Phone, Messaging, Conta
 
 ## 3. R8 application train
 
-R8 independently qualifies Calculator + Convert, Games, Reader publication capability, Reader TXT/share/process-text/TTS/OCR capability and Media.
+R8 independently qualifies Calculator + Convert, Games, Reader publication capability, Reader TXT/share/process-text/TTS/OCR capability, Media, and Sable Hub / Messages.
+
+Sable Hub is the central communication surface while the proven Android messaging transport remains available for MMS/RCS and fallback. Product inclusion of Hub does not make it the default SMS role holder.
 
 The old R9-first-Calculator sequencing is superseded. A standalone-qualified Sable app still does not become a product default automatically.
 
