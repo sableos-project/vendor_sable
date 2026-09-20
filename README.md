@@ -1,5 +1,17 @@
 # SableOS common product integration
 
+![Local CI](https://img.shields.io/badge/CI-local%20direct-active-2ea44f)
+![R9 Launcher](https://img.shields.io/badge/R9%20launcher%20visual-PASS-2ea44f)
+![Fresh Panther](https://img.shields.io/badge/fresh%20Panther%20build-IN%20PROGRESS-f0ad4e)
+![Pixel 7](https://img.shields.io/badge/Pixel%207%20physical-PENDING-lightgrey)
+![Titan 2](https://img.shields.io/badge/Titan%202-keyboard--first%20QUEUED-6f42c1)
+
+## Current R9 product state
+
+The current Panther composition has moved beyond the earlier R8 planning model. The accepted first-party app set is Calculator, Sudoku, Minesweeper, 2048, Media, Reader, Hub/Messages and Mail. Launcher HOME is source-built `Launcher3QuickStep`; the old standalone SableStart HOME APK is absent from the product graph.
+
+Target-files composition for these identities has passed. Fresh full-build causality and physical Pixel 7 runtime acceptance remain separate R9 gates. Titan 2 will consume the same common application/product contracts where compatible after Panther closure.
+
 Common SableOS Android product composition, overlays, permission integration and inclusion of qualified/trusted application artifacts.
 
 This repository is **not** a home for copied application source, opaque local APKs, external Gradle dependency trees or device-specific forks.
@@ -15,7 +27,7 @@ This repository is **not** a home for copied application source, opaque local AP
 
 Organization-wide engineering-assurance requirements live in `sableos-project/.github/docs/SECURITY_QUALITY_ENGINEERING.md`.
 
-## Current R8 product-integration model
+## Current product-integration model
 
 ```text
 A1 disposable app qualification
@@ -47,14 +59,16 @@ vendor/sable/config/common.mk
 
 Panther and Titan 2 products inherit the common Sable composition and add only documented target-specific exceptions. Do not duplicate the common application list in every device repository.
 
-## Current R8 app direction
+## Current first-party app direction
 
 - Sable Calculator: Standard + Scientific + offline conversion;
 - Sable Sudoku;
 - Sable Mines;
 - Sable 2048;
 - one Sable Reader product composed from publication and TXT/share/TTS/OCR capabilities;
-- Sable Media: local Music + Internet Radio.
+- Sable Media: local Music + Internet Radio;
+- Sable Hub / Messages;
+- Sable Mail.
 
 A separate Sable Convert APK is no longer the preferred final product shape. The validated Panther reference build remains historical evidence even when later R8 application identities change.
 

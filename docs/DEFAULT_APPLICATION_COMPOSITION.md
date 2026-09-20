@@ -1,5 +1,8 @@
 # Default application composition policy
 
+> **Current execution overlay — 2026-09-20:** the accepted Panther first-party application set is Sable Calculator, Sudoku, Minesweeper, 2048, Media, Reader, Hub/Messages and Mail. HOME is source-built Launcher3QuickStep with Sable presentation; the standalone SableStart HOME APK is retired. Target-files composition has passed; fresh full-build and physical-device proof remain separate R9 gates.
+
+
 Status: **normative product-integration/default-application policy.**
 
 `vendor_sable` owns common product inclusion/configuration for validated applications. It does not own application implementation source or standalone Cargo/Gradle dependency graphs.
