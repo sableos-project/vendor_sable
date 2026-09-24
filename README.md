@@ -62,3 +62,7 @@ source checks
 ```
 
 A Panther PASS does not imply Titan PASS.
+
+## K1/K2 integration note
+
+The common product composition is independent of release artifact class. Panther is represented by the qualified target-files path; future Titan N0 may use a GSI/system artifact while consuming the same common Sable application source where compatible. Device serials are deployment identity, never product composition identity.
