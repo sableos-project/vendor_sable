@@ -1,55 +1,63 @@
-# Product integration ownership boundary
+# vendor_sable ownership boundary
 
-`vendor_sable` contains Sable-owned product integration that is common across targets.
+Status: **current normative boundary — 2026-09-24**
 
-## Belongs here
+`vendor_sable` owns common product composition and common Android integration
+for qualified Sable modules/artifacts.
 
-- common Sable package inclusion/selection;
-- shared product properties and overlays;
-- shared product make/Soong integration;
-- common import/module definitions for **exact qualified application artifacts** when this is the accepted architecture;
-- common Sable SELinux/product wiring when it is genuinely cross-device;
-- common feature/profile selection that is not board-specific;
-- product-level permission/allowlist/role wiring required by an accepted common application.
+It does not own:
 
-## Does not belong here
+- common application implementation source;
+- device BSP/vendor hardware adaptation;
+- build/deployment orchestration;
+- source-manifest ownership;
+- private raw firmware/evidence.
 
-- application implementation source merely because the app will ship in SableOS;
-- Cargo/Gradle dependency graphs that belong to the application build;
-- opaque manually built APKs without source/workflow/hash provenance;
-- complete device trees;
-- board/kernel configuration;
-- target-specific VINTF/HAL compatibility;
-- proprietary vendor blobs or firmware;
-- device-specific SELinux rules that exist only for one hardware target;
-- copied application source;
-- generated upstream/substrate product files edited to carry Sable semantics.
+## Common product ownership
 
-## Qualified-artifact rule
+Appropriate responsibilities include:
 
-When the product consumes a standalone-qualified APK, this repository may own the common Android product import/selection **only after** the artifact is frozen and the selected Android 17/GrapheneOS import semantics are proven.
+- common `PRODUCT_PACKAGES` / product-selection definitions;
+- common import/module definitions for exact qualified artifacts;
+- common permission/product integration;
+- shared product overlays/policy that are not device-specific.
 
-The integration record must retain the connection:
+## Device exceptions
+
+Panther/Titan/Q27 device differences belong in bounded target adapters.
+
+Do not copy the common application list into every device repository.
+
+## Artifact rule
+
+K1 registry v2 supports multiple release artifact classes, but product
+integration still proves the actual module/import/signing/partition behavior of
+the selected Android substrate.
+
+Panther R9 proves the mechanism used by that accepted release. A future
+Titan-family GSI/system composition must prove its own product/artifact boundary.
+
+## Ownership decision tree
 
 ```text
-source/upstream identity
- -> qualification workflow/artifact hash
- -> vendor_sable import/module
- -> product selection/install path
- -> target-files/image/runtime evidence
+application implementation changed
+    -> owning application repo
+
+common Sable product selection/integration changed
+    -> vendor_sable
+
+device-only behavior changed
+    -> device adapter
+
+build/artifact/deployment mechanism changed
+    -> build
+
+exact source/artifact composition changed
+    -> platform_manifest / provenance
 ```
 
-`android_app_import` is a candidate implementation mechanism, not an ownership rule by itself.
+## Security
 
-## Rule of thumb
-
-If a file changes because:
-
-- **the application implementation changed** -> application repository/workspace;
-- **the Sable product changed for every target** -> `vendor_sable` or another documented common owner;
-- **the shared semantic/design contract changed** -> `platform_sable`;
-- **the hardware/substrate target changed** -> first consider `device_sable_<target>`;
-- **the exact source/artifact composition changed** -> `platform_manifest` / release provenance;
-- **the build/evidence procedure changed** -> `build`.
-
-Product integration must reflect decided architecture; it must not become the place where application ownership is invented.
+Do not add privileged/shared-user/system authority merely to simplify product
+integration. Privilege remains explicit, narrowly justified and independently
+tested.
