@@ -1,6 +1,6 @@
 # vendor_sable ownership boundary
 
-Status: **current normative boundary — 2026-09-24**
+Status: **current normative boundary — 2026-10-02**
 
 `vendor_sable` owns common product composition and common Android integration
 for qualified Sable modules/artifacts.
@@ -34,8 +34,8 @@ K1 registry v2 supports multiple release artifact classes, but product
 integration still proves the actual module/import/signing/partition behavior of
 the selected Android substrate.
 
-Panther R9 proves the mechanism used by that accepted release. A future
-Titan-family GSI/system composition must prove its own product/artifact boundary.
+Panther R9 proves the mechanism used by that accepted release. Titan N1D/C3B GSI/system-image composition must prove its own product/artifact
+boundary before public/release claims.
 
 ## Ownership decision tree
 
@@ -43,8 +43,12 @@ Titan-family GSI/system composition must prove its own product/artifact boundary
 application implementation changed
     -> owning application repo
 
-common Sable product selection/integration changed
+common Sable first-party product selection/integration changed
     -> vendor_sable
+
+user chooses different HOME / IME
+    -> Android supported user/default-role/input-method mechanism
+    -> do not rewrite vendor_sable product ownership
 
 device-only behavior changed
     -> device adapter
