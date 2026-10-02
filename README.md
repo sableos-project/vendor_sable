@@ -1,6 +1,6 @@
 # SableOS common product integration
 
-## Current product state — 2026-09-25
+## Current product state — 2026-10-02
 
 Panther R9 product composition is accepted and frozen as the touch-first
 reference after the final Sable Hub V1 closure.
@@ -11,7 +11,9 @@ R9_PANTHER_TARGET_FILES_SHA256=a0b359613c4f30e9a834fba212e0b044a97d63ed0537c5947
 R9_PANTHER_PHYSICAL_ACCEPTANCE=PASS_WITH_PRESERVED_PLAY_STATE
 ```
 
-Active integration work now targets the keyboard-first Titan family.
+Active integration work now targets the keyboard-first Titan family through the
+N1D/C3B canonical integration lane. Public build/flash enablement remains
+separately gated.
 
 The accepted common first-party product set includes:
 
@@ -56,14 +58,32 @@ explicit.
 Two common system-image capabilities are active design work:
 
 **Sable Camera**
-- common Camera2/capability-driven source;
+- common Sable-owned Camera2/capability-driven source;
+- keyboard-device **Camera Control Deck** interaction: viewfinder-first,
+  portrait supported, landscape physical-control optimization, touch fallback;
 - device camera profiles below the common core;
 - SYSTEM_CAMERA privilege only on devices where physical evidence proves it is
   needed and negative third-party-access tests pass.
 
 **Sable Keyboard / input**
 - offline-capable common IME/text composition;
-- physical keylayout/keycharacter/Fn/Sym/backlight quirks remain device-owned.
+- physical keylayout/keycharacter/Fn/Sym/backlight quirks remain device-owned;
+- Sable Keyboard may be the factory/default first-party IME while user-selected
+  third-party IMEs remain allowed.
+
+## Default/user-choice distinction
+
+Common product composition defines Sable first-party defaults; it does not ban
+Android user choice.
+
+```text
+SABLE_FIRST_PARTY_HOME=Launcher3QuickStep_HOSTING_SABLE_START
+THIRD_PARTY_HOME_SELECTION_ALLOWED=YES
+FORCE_SABLE_HOME_AFTER_USER_SELECTION=NO
+SABLE_FIRST_PARTY_IME=SableKeyboard
+THIRD_PARTY_IME_SELECTION_ALLOWED=YES
+FORCE_SABLE_IME_AFTER_USER_SELECTION=NO
+```
 
 ## Claim discipline
 
@@ -80,8 +100,8 @@ A Panther PASS does not imply Titan PASS.
 ## K1/K2 integration note
 
 The common product composition is independent of release artifact class. Panther
-is represented by the qualified target-files path; future Titan N0 may use a
-GSI/system artifact while consuming the same common Sable application source
+is represented by the qualified target-files path; Titan N1D/C3B engineering may use a
+GSI/system-image path while consuming the same common Sable application source
 where compatible. Device serials are deployment identity, never product
 composition identity.
 
