@@ -1,6 +1,6 @@
 # SableOS default application composition
 
-Status: **current common product composition — 2026-09-24**
+Status: **current common product composition — 2026-10-02**
 
 Panther R9 physically accepted the current common product composition and is now
 a frozen reference. Titan-family work should reuse this common composition where
@@ -9,7 +9,7 @@ substrate compatibility permits, with bounded exceptions only.
 ## Current first-party set
 
 ```text
-SableLauncher         org.sableos.launcher
+Sable Start           presentation/state hosted in Launcher3QuickStep
 Sable Calculator      org.sableos.calculator
 Sable Sudoku          org.sableos.sudoku
 Sable Minesweeper     org.sableos.minesweeper
@@ -23,10 +23,19 @@ Sable Weather         org.sableos.weather
 Sable Calendar        org.sableos.calendar
 ```
 
-Launcher3QuickStep remains a platform Recents/Overview/task substrate and is not
-the user-facing HOME owner.
+Launcher3QuickStep is the canonical Sable first-party HOME runtime and
+Recents/Overview/task/gesture substrate. It hosts Sable Start
+presentation/state source.
 
-The standalone SableStart runtime product is retired.
+Standalone `org.sableos.launcher` / SableLauncher and standalone SableStart HOME
+runtimes are retired from the current product architecture.
+
+This is first-party/default ownership, not a prohibition on Android user choice:
+
+```text
+THIRD_PARTY_HOME_SELECTION_ALLOWED=YES
+FORCE_SABLE_HOME_AFTER_USER_SELECTION=NO
+```
 
 ## Reader boundary
 
@@ -47,8 +56,8 @@ replacement has been accepted. Replacement is a separate evidence decision, not
 a branding preference.
 
 Panther Camera remains the documented frozen-R9 upstream/preprocessed visual
-exception. Keyboard-first devices move toward Sable Camera as a common
-system-image component.
+exception. Keyboard-first devices move toward the Sable-owned Camera2 component
+with the Camera Control Deck interaction model.
 
 ## Appearance
 
@@ -59,11 +68,13 @@ Follow-system/Light/Dark semantics.
 
 The common product architecture adds two explicit system-image workstreams:
 
-- Sable Camera;
+- Sable Camera / Camera Control Deck;
 - Sable Keyboard / input.
 
 They remain common product source with device-specific profiles/adapters below
-them.
+them. Sable Keyboard is the first-party/default direction, while Android
+third-party IME installation/enablement/selection remains allowed and SableOS
+must not force its IME back after explicit user choice.
 
 ## Product evidence
 
@@ -84,8 +95,8 @@ Do not collapse these layers.
 
 Panther is the qualified target-files/full-image reference.
 
-Titan 2 / Titan 2 Elite N0 may use a GSI/system artifact while preserving stock
-kernel/vendor/ODM/firmware. They should still consume the same common app source
+Titan 2 N1D/C3B engineering may use a GSI/system-image path while preserving the
+qualified vendor/kernel boundary; Titan 2 Elite remains independently gated. They should still consume the same common app source
 where compatible.
 
 A Titan-specific keyboard/display/camera/vendor adapter is valid. A duplicate
