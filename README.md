@@ -25,7 +25,7 @@ Sable Sudoku
 Sable Minesweeper
 Sable 2048
 Sable Media
-Sable Reader (Reader v2 design: books + comics + audiobooks)
+Sable Reader (Reader v2 architecture accepted: EPUB/PDF + comics + audiobooks)
 Sable Text Reader (separate lightweight text/TTS/accessibility product)
 Sable Hub / Messages
 Sable Mail
@@ -56,9 +56,18 @@ P4  Weather city-management + keyboard-first closure
 The stages are developed continuously, frozen independently and receive one
 batched exact-head ai-g732 qualification after P4 before canonical admission.
 
-P5 is separate design work for Sable Reader v2: common keyboard-first books,
-local-first comics/manga/webtoons and audiobooks. Sable Text Reader remains a
-separate lightweight product.
+P5 Sable Reader v2 architecture is accepted and may proceed as a separate P5A-P5F implementation train: common keyboard-first EPUB/PDF, local-first CBZ comics/manga/webtoons and audiobooks. Sable Text Reader remains a separate lightweight product. P5 source is not yet admitted into a Titan image.
+
+## Design-reference boundary
+
+The 23-screen `titan2-temp/apps/titan2/screens` catalog is an accepted common design/behavior reference:
+
+```text
+SABLESCREENS_REFERENCE_BASELINE=YES
+SABLESCREENS_SHIPPING_PRODUCT=NO
+```
+
+It informs common product composition and convergence but is never packaged as a substitute for canonical runtime owners.
 
 ## Common product rule
 
