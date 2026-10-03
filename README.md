@@ -11,9 +11,10 @@ R9_PANTHER_TARGET_FILES_SHA256=a0b359613c4f30e9a834fba212e0b044a97d63ed0537c5947
 R9_PANTHER_PHYSICAL_ACCEPTANCE=PASS_WITH_PRESERVED_PLAY_STATE
 ```
 
-Active integration work now targets the keyboard-first Titan family through the
-N1D/C3B canonical integration lane. Public build/flash enablement remains
-separately gated.
+Active integration work now targets Titan 2 through the N1D/C3B E3 canonical
+integration lane. E1 and E2 are qualified; the first Sable-composed E3
+systemimage build is running and not yet sealed. Public build/flash enablement
+remains separately gated.
 
 The accepted common first-party product set includes:
 
@@ -24,8 +25,8 @@ Sable Sudoku
 Sable Minesweeper
 Sable 2048
 Sable Media
-Sable Reader
-Sable Text Reader
+Sable Reader (Reader v2 design: books + comics + audiobooks)
+Sable Text Reader (separate lightweight text/TTS/accessibility product)
 Sable Hub / Messages
 Sable Mail
 Sable Weather
@@ -40,6 +41,24 @@ Priority | Messages | Email | People
 
 Hub is an aggregator/interaction surface. Source applications/providers retain
 account, credential, private database and protocol-stack ownership.
+
+## Current product-source train
+
+Parallel source work currently runs in `aimindseye/titan2-temp`:
+
+```text
+P1  Sable Start keyboard-first handoff
+P2  Sable Keyboard provisioning readiness
+P3  SetupWizard2 keyboard/square-display integration preparation
+P4  Weather city-management + keyboard-first closure
+```
+
+The stages are developed continuously, frozen independently and receive one
+batched exact-head ai-g732 qualification after P4 before canonical admission.
+
+P5 is separate design work for Sable Reader v2: common keyboard-first books,
+local-first comics/manga/webtoons and audiobooks. Sable Text Reader remains a
+separate lightweight product.
 
 ## Common product rule
 
